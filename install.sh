@@ -98,6 +98,11 @@ echo -e "\n${GREEN}Installing Node Version Manager${NORMAL}"
 source install/nvm.sh || handle_error "NVM installation failed"
 success_message "Node Version Manager installed"
 
+# Setup Claude Code
+echo -e "\n${GREEN}Setting up Claude Code${NORMAL}"
+source install/claude.sh || handle_error "Claude Code setup failed"
+success_message "Claude Code configured"
+
 # Install fonts
 echo -e "\n${GREEN}Installing fonts${NORMAL}"
 source install/fonts.sh || handle_error "Font installation failed"

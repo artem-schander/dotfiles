@@ -3,6 +3,7 @@
 return {
   {
     "zbirenbaum/copilot.lua",
+    enabled = false, -- re-enable when subscription is active
     cmd = "Copilot",
     event = "InsertEnter",
     opts = {
@@ -11,11 +12,48 @@ return {
     },
   },
   {
+    "coder/claudecode.nvim",
+    dependencies = {
+      "folke/snacks.nvim",
+      {
+        "AstroNvim/astrocore",
+        opts = function(_, opts)
+          opts.mappings.n["<leader>i"] = { name = "󱙺 Claude Code" }
+        end,
+      },
+    },
+    config = function()
+      local utils = require("user.utils")
+      local orientation = utils.get_viewport_orientation()
+      require("claudecode").setup({
+        auto_start = true,
+        terminal = {
+          provider = "snacks",
+          split_side = "right",
+          snacks_win_opts = orientation == "portrait" and { position = "bottom", height = 0.4 } or nil,
+        },
+      })
+    end,
+    keys = {
+      { "<leader>i", nil, desc = " Claude Code" },
+      { "<leader>ic", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+      { "<leader>if", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+      { "<leader>ir", "<cmd>ClaudeCode --resume<cr>", desc = "Resume session" },
+      { "<leader>iC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue session" },
+      { "<leader>im", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select model" },
+      { "<leader>ib", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add buffer to context" },
+      { "<leader>is", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send selection" },
+      { "<leader>ia", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+      { "<leader>id", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Reject diff" },
+    },
+  },
+  {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = { "markdown", "codecompanion" }
   },
   {
     "ravitemer/mcphub.nvim",
+    enabled = false,
     build = "npm install -g mcp-hub@latest",
     config = function()
       require("mcphub").setup()
@@ -33,6 +71,7 @@ return {
   },
   {
     "olimorris/codecompanion.nvim",
+    enabled = false, -- re-enable with anthropic adapter if API key available
     dependencies = {
       "nvim-lua/plenary.nvim",
       "folke/snacks.nvim",
@@ -182,29 +221,27 @@ return {
 
       require("codecompanion").setup {
         opts = { log_level = "DEBUG" },
-        -- adapters = {
-        --   copilot = function()
-        --     return require("codecompanion.adapters").extend("copilot", {})
-        --   end,
-        -- },
         strategies = {
           chat = {
             adapter = {
               name = "copilot",
               model = "claude-sonnet-4",
             },
+            -- adapter = "anthropic",
           },
           inline = {
             adapter = {
               name = "copilot",
               model = "claude-sonnet-4",
             },
+            -- adapter = "anthropic",
           },
           cmd = {
             adapter = {
               name = "copilot",
               model = "claude-sonnet-4",
             },
+            -- adapter = "anthropic",
           },
         },
         display = {

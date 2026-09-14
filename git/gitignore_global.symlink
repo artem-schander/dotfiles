@@ -24,3 +24,5 @@ tscommand*.txt
 
 # npm things
 npm-debug.log
+
+**/.claude/settings.local.json

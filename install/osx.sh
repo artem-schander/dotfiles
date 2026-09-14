@@ -3,6 +3,23 @@
 echo -e "\n\n${GREEN}Setting OS X settings"
 echo "==============================${NORMAL}"
 
+# macOS lazygit reads from ~/Library/Application Support/lazygit/, not ~/.config/lazygit/.
+# Symlink the config so it stays in sync with the dotfiles-managed ~/.config/lazygit/config.yml.
+LAZYGIT_SUPPORT_DIR="$HOME/Library/Application Support/lazygit"
+mkdir -p "$LAZYGIT_SUPPORT_DIR"
+LAZYGIT_SUPPORT_CONFIG="$LAZYGIT_SUPPORT_DIR/config.yml"
+LAZYGIT_CONFIG_TARGET="$HOME/.config/lazygit/config.yml"
+if [ -L "$LAZYGIT_SUPPORT_CONFIG" ]; then
+    echo "lazygit Library symlink already exists... Skipping."
+elif [ -e "$LAZYGIT_SUPPORT_CONFIG" ]; then
+    echo "lazygit Library config exists (not a symlink)... backing up and replacing with symlink."
+    mv -f "$LAZYGIT_SUPPORT_CONFIG" "${LAZYGIT_SUPPORT_CONFIG}.bak"
+    ln -s "$LAZYGIT_CONFIG_TARGET" "$LAZYGIT_SUPPORT_CONFIG"
+else
+    echo "Creating lazygit Library symlink."
+    ln -s "$LAZYGIT_CONFIG_TARGET" "$LAZYGIT_SUPPORT_CONFIG"
+fi
+
 # echo "Finder: show all filename extensions"
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 

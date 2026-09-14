@@ -69,5 +69,13 @@ elif [ "$OS" == "Arch" ]; then
     sudo pacman -S --noconfirm ripgrep fd tree-sitter
 fi
 
+# Install neovim-remote (nvr) for lazygit file-open integration
+if ! command_exists nvr; then
+    echo "Installing neovim-remote (nvr)..."
+    pip3 install neovim-remote
+else
+    echo "neovim-remote already installed, skipping..."
+fi
+
 echo -e "\n${GREEN}AstroNvim setup complete!${NORMAL}"
 echo "Run 'nvim' to start and the plugins will install automatically on first launch."

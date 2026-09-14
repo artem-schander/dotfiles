@@ -249,6 +249,11 @@ if [[ -d $HOME/.local/share/bob/nvim-bin ]]; then
     export PATH=$HOME/.local/share/bob/nvim-bin/:$PATH
 fi
 
+# add Python user bin to PATH (for pip-installed tools like nvr)
+if [[ -d "$(python3 -m site --user-base)/bin" ]]; then
+    export PATH="$(python3 -m site --user-base)/bin:$PATH"
+fi
+
 # check for custom bin directory and add to path
 # if [[ -d /usr/local/Cellar/python@2 ]]; then
 #     python2_dir=$(find /usr/local/Cellar/python@2 -maxdepth 1 -type d -name '2.*' -print | head -n1)
@@ -354,6 +359,9 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 export BAT_CONFIG_PATH=$HOME/.config/bat/bat.conf
 
 source $ZSH/oh-my-zsh.sh
+
+# private keys, env vars, etc.
+[ -f ~/.private.zsh ] && source ~/.private.zsh
 
 # unbold spaceship
 () {

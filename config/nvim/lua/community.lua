@@ -24,4 +24,8 @@ return {
   { import = "astrocommunity.completion.copilot-cmp" },
   -- { import = "astrocommunity.pack.laravel" },
   { import = "astrocommunity.pack.vue" },
+
+  -- Live markdown preview in the browser (renders mermaid diagrams natively).
+  -- Keymaps: <Leader>Mp preview, <Leader>Ms stop, <Leader>Mt toggle.
+  { import = "astrocommunity.markdown-and-latex.markdown-preview-nvim" },
 }

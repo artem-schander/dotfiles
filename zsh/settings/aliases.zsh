@@ -17,6 +17,7 @@ unalias nvim >/dev/null 2>&1
 alias vim="nvim"
 
 alias top="htop"
+alias neo="neo --defaultbg"
 
 # Filesystem aliases
 alias ..='cd ..'
@@ -123,3 +124,14 @@ alias dsa='dsall'
 
 # ssh with TERM=xterm
 alias ssh='TERM=xterm ssh'
+
+# claude code
+export Z_AI_BASE_URL="https://api.z.ai/api/anthropic"
+export DEEPSEEK_BASE_URL="https://api.deepseek.com/anthropic"
+export DEEPSEEK_API_TIMEOUT_MS=600000
+export DEEPSEEK_MODEL=deepseek-reasoner
+export DEEPSEEK_SMALL_FAST_MODEL=deepseek-chat
+export DEEPSEEK_CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+
+alias zc='ANTHROPIC_BASE_URL=${Z_AI_BASE_URL} ANTHROPIC_AUTH_TOKEN=${Z_AI_AUTH_TOKEN} claude'
+alias dc='ANTHROPIC_BASE_URL=${DEEPSEEK_BASE_URL} ANTHROPIC_AUTH_TOKEN=${DEEPSEEK_AUTH_TOKEN} API_TIMEOUT_MS=${DEEPSEEK_API_TIMEOUT_MS} ANTHROPIC_MODEL=${DEEPSEEK_MODEL} ANTHROPIC_SMALL_FAST_MODEL=${DEEPSEEK_SMALL_FAST_MODEL} CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=${DEEPSEEK_CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC} claude'
