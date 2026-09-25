@@ -132,7 +132,7 @@ optional_packages=(
     i3-wm
     polybar
     rofi
-    compton
+    picom
     feh
     arandr
     redshift

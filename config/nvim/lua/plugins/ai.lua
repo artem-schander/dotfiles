@@ -54,9 +54,15 @@ return {
   {
     "ravitemer/mcphub.nvim",
     enabled = false,
-    build = "npm install -g mcp-hub@latest",
+    -- mcp-hub needs Node >= 18 (TransformStream). This project's .nvmrc pins
+    -- Node 16, so pin mcp-hub to an explicit Node 22 instead of `env node`.
+    build = "PATH=\"$HOME/.nvm/versions/node/v22.14.0/bin:$PATH\" npm install -g mcp-hub@latest",
     config = function()
-      require("mcphub").setup()
+      local node = vim.fn.expand("$HOME/.nvm/versions/node/v22.14.0/bin/node")
+      require("mcphub").setup({
+        cmd = node,
+        cmdArgs = { vim.fn.expand("$HOME/.nvm/versions/node/v22.14.0/lib/node_modules/mcp-hub/dist/cli.js") },
+      })
     end
   },
   {
@@ -321,7 +327,10 @@ return {
             callback = "mcphub.extensions.codecompanion",
             opts = {
               show_result_in_chat = true,  -- Show mcp tool results in chat
-              make_vars = true,            -- Convert resources to #variables
+              -- make_vars disabled: CodeCompanion v19 removed chat `variables`
+              -- (now `context`), which mcphub's extension doesn't yet support
+              -- (it targets CC v18). Re-enable once mcphub adds CC v19 support.
+              make_vars = false,           -- Convert resources to #variables
               make_slash_commands = true,  -- Add prompts as /slash commands
             }
           }

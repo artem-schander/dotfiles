@@ -123,12 +123,25 @@ module-margin-left = 1
 module-margin-right = 1
 
 ;https://github.com/jaagr/polybar/wiki/Fonts
+; NOTE: module font refs (label-font, *-font) are 1-BASED, while font-N is 0-based.
+; So cpu1's `label-font = 3` points at font-2 -> font-2 MUST stay the text font,
+; or the "Cpu xx%" label renders in the wrong font/size.
 font-0 = "Monaspace Neon:size=8.6;2"
 ; font-0 = "JetBrains Mono:size=8.6;2"
-font-1 = "FiraCode Nerd Font Mono:size=14;3"
-; font-2 = "FiraCode Nerd Font Mono:style=Regular:pixelsize=8;1"
-; font-3 = "FiraCode Nerd Font Mono:style=Solid:pixelsize=8;1"
-; font-4 = "FiraCode Nerd Font Mono:pixelsize=8;1"
+; Primary icon font. FuraCode = the old, COMPLETE Nerd Font (v2): it still has all
+; the module icons AND the legacy Font Awesome arrows (U+f544/f55c) that Nerd Fonts
+; v3 relocated out of FiraCode. Using one font for every icon keeps them uniform
+; and lets this single size control all icon sizes. Bump this to resize the icons.
+font-1 = "FuraCode Nerd Font Mono:size=12;3"
+; font-2 = text font: referenced by cpu1 label-font = 3 (1-based -> font-2).
+font-2 = "Monaspace Neon:size=8.6;2"
+; Extra symbol fallback (kept in sync with font-1 size for consistency).
+font-3 = "Symbols Nerd Font:size=12;3"
+; Fallback for stray Unicode symbols/dingbats in window titles (e.g. U+2750 ❐)
+font-4 = "Noto Sans Symbols 2:size=10;2"
+; Dedicated smaller icon font for i3 workspace labels (icon+number share one
+; font in polybar, so this is a compromise size: readable icon, sane number).
+font-5 = "FuraCode Nerd Font Mono:size=10;2"
 
 modules-left = i3 xwindow
 modules-center =
@@ -451,6 +464,7 @@ label-mode-background = #d19a66
 ; Default: %icon%  %name%
 ; focused = Active workspace on focused monitor
 label-focused = %icon% %name%
+label-focused-font = 6
 label-focused-background = ${colors.background}
 label-focused-foreground = #61afef
 label-focused-underline = #61afef
@@ -463,6 +477,7 @@ label-focused-padding = 1
 ; Default: %icon%  %name%
 ; unfocused = Inactive workspace on any monitor
 label-unfocused = %icon% %name%
+label-unfocused-font = 6
 label-unfocused-padding = 1
 label-unfocused-background = ${colors.background}
 label-unfocused-foreground = ${colors.foreground}
@@ -470,6 +485,7 @@ label-unfocused-underline =
 
 ; visible = Active workspace on unfocused monitor
 label-visible = %icon% %name%
+label-visible-font = 6
 label-visible-background = ${self.label-focused-background}
 label-visible-underline = ${self.label-focused-underline}
 label-visible-padding = 1
@@ -481,6 +497,7 @@ label-visible-padding = 1
 ; Default: %icon%  %name%
 ; urgent = Workspace with urgency hint set
 label-urgent = %icon% %name%
+label-urgent-font = 6
 label-urgent-background = ${self.label-focused-background}
 label-urgent-foreground = #be5046
 label-urgent-padding = 1
@@ -763,6 +780,7 @@ format-foreground = ${colors.foreground}
 format-background = ${colors.background}
 ;   
 format-prefix = " "
+format-prefix-font = 2
 format-prefix-foreground = #98c379
 format-underline = #98c379
 
@@ -850,6 +868,7 @@ date-alt = " %a %b %d, %Y"
 time = %l:%M%p
 time-alt = %l:%M%p
 format-prefix = " "
+format-prefix-font = 2
 format-prefix-foreground = ${colors.foreground}
 format-foreground = ${colors.foreground}
 format-background = ${colors.background}
@@ -945,6 +964,7 @@ format-mounted-underline = #c678dd
 ;      
 
 format-mounted-prefix = " "
+format-mounted-prefix-font = 2
 format-mounted-prefix-foreground = #c678dd
 
 
@@ -1082,6 +1102,7 @@ label = %percentage_used%%
 
 format = Mem <label>
 format-prefix = " "
+format-prefix-font = 2
 format-prefix-foreground = #56b6c2
 format-underline = #56b6c2
 format-foreground = ${colors.foreground}
@@ -1131,6 +1152,7 @@ format-connected = <label-connected>
 ;    
 
 format-connected-prefix = " "
+format-connected-prefix-font = 2
 format-connected-prefix-foreground = #d19a66
 format-connected-foreground = ${colors.foreground}
 format-connected-background = ${colors.background}
@@ -1154,6 +1176,7 @@ format-connected = <label-connected>
 ;    
 
 format-connected-prefix = " "
+format-connected-prefix-font = 2
 format-connected-prefix-foreground = #d19a66
 format-connected-foreground = ${colors.foreground}
 format-connected-background = ${colors.background}
@@ -1461,6 +1484,7 @@ type = internal/xkeyboard
 blacklist-0 = num lock
 
 format-prefix = " "
+format-prefix-font = 2
 format-prefix-foreground = #e5c07b
 format-prefix-background = ${colors.background}
 format-prefix-underline = #e5c07b

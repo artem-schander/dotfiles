@@ -286,7 +286,10 @@ return {
     end,
   },
 
-  { "EmranMR/tree-sitter-blade" },
+  -- submodules = false: the repo's tree-sitter-html submodule is only used to
+  -- generate the grammar, not by nvim (src/parser.c is committed). Recursing it
+  -- on update breaks Lazy when the submodule's .git/modules entry is corrupt.
+  { "EmranMR/tree-sitter-blade", submodules = false },
 
   { "tpope/vim-surround" },
   { "tpope/vim-abolish" },

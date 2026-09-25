@@ -53,6 +53,13 @@ fi
 
 success_message "Platform-specific packages installed"
 
+# Setup zram (Linux only - memory compression like macOS)
+if [ "$OS" != "Darwin" ]; then
+    echo -e "\n${GREEN}Setting up zram memory compression${NORMAL}"
+    source install/zram.sh || handle_error "zram setup failed"
+    success_message "zram configured"
+fi
+
 # Setup git
 echo -e "\n${GREEN}Setting up git configuration${NORMAL}"
 source install/git.sh || handle_error "Git setup failed"
@@ -107,6 +114,11 @@ success_message "Claude Code configured"
 echo -e "\n${GREEN}Installing fonts${NORMAL}"
 source install/fonts.sh || handle_error "Font installation failed"
 success_message "Fonts installed"
+
+# Link fontconfig drop-ins (Nerd Font symbol fallback, etc.)
+echo -e "\n${GREEN}Configuring fontconfig${NORMAL}"
+source install/fontconfig.sh || handle_error "fontconfig setup failed"
+success_message "fontconfig configured"
 
 # Final setup
 echo -e "\n${GREEN}Performing final setup${NORMAL}"

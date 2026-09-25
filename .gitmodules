@@ -4,3 +4,6 @@
 [submodule "bin/vscode-php-debug"]
 	path = bin/vscode-php-debug
 	url = https://github.com/xdebug/vscode-php-debug.git
+[submodule "resources/fonts/Monaspace"]
+	path = resources/fonts/Monaspace
+	url = https://github.com/githubnext/monaspace.git

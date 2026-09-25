@@ -85,8 +85,8 @@ bindsym XF86Launch1 exec terminal -e 'alsamixer'
 # Start Applications
 bindsym $mod+Ctrl+b exec $myTerm -e 'bmenu'
 # bindsym $mod+F5 exec terminal -e 'mocp'
-bindsym $mod+t exec --no-startup-id pkill compton
-bindsym $mod+Ctrl+t exec --no-startup-id compton -b
+bindsym $mod+t exec --no-startup-id pkill picom
+bindsym $mod+Ctrl+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "systemctl --user restart dunst; exec notify-send 'restart dunst'"
 bindsym Print exec --no-startup-id i3-scrot
 bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
@@ -428,7 +428,8 @@ exec_always --no-startup-id setxkbmap -option compose:ralt
 # exec --no-startup-id i3-msg "workspace 2; workspace 1; exec $myTerm"
 
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-# exec_always --no-startup-id compton -b --config $HOME/.config/compton/compton.conf
+# Start the compositor (picom). Guarded so an i3 reload doesn't spawn duplicates.
+exec_always --no-startup-id sh -c "pgrep -x picom > /dev/null || picom -b --config $HOME/.config/compton/compton.conf"
 exec --no-startup-id nm-applet
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
@@ -445,6 +446,8 @@ exec_always --no-startup-id "systemctl --user restart dunst"
 
 # KEYBOARD
 exec_always --no-startup-id xset r rate 250 30
+# Disable the X11 bell (stops the beep scrot/apps trigger)
+exec_always --no-startup-id xset b off
 
 # switch keybpoard layout / language
 # ALT + k

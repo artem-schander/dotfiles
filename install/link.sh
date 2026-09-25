@@ -39,7 +39,14 @@ if [ ! -d $HOME/.config ]; then
 fi
 # configs=$( find -path "$DOTFILES/config.symlink" -maxdepth 1 )
 for config in $DOTFILES/config/*; do
-    target=$HOME/.config/$( basename $config )
+    name=$( basename $config )
+    # fontconfig is a shared dir (system / Font Manager write here too), so we
+    # symlink individual files instead of the whole dir. See install/fontconfig.sh
+    if [ "$name" = "fontconfig" ]; then
+        echo "Skipping fontconfig dir (handled per-file by install/fontconfig.sh)"
+        continue
+    fi
+    target=$HOME/.config/$name
     if [ -e $target ]; then
         if [ -L "$target" ]; then
             echo "~${target#$HOME} symlink already exists... Skipping."
