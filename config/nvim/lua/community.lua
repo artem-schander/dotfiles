@@ -29,4 +29,7 @@ return {
   -- Live markdown preview in the browser (renders mermaid diagrams natively).
   -- Keymaps: <Leader>Mp preview, <Leader>Ms stop, <Leader>Mt toggle.
   { import = "astrocommunity.markdown-and-latex.markdown-preview-nvim" },
+  -- the community build calls mkdp#util#install, which isn't on the rtp yet at build time (E117),
+  -- so the server binary never gets downloaded; run the plugin's installer directly instead
+  { "iamcco/markdown-preview.nvim", build = "cd app && ./install.sh" },
 }

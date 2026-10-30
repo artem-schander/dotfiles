@@ -60,13 +60,13 @@ fi
 echo "Installing additional dependencies..."
 if [ "$OS" == "Darwin" ]; then
     # Install additional tools via Homebrew
-    brew install ripgrep fd tree-sitter
+    brew install ripgrep fd tree-sitter-cli
 elif [ "$OS" == "Ubuntu" ]; then
     # Install additional tools via apt
     sudo apt install -y ripgrep fd-find
 elif [ "$OS" == "Arch" ]; then
     # Install additional tools via pacman
-    sudo pacman -S --noconfirm ripgrep fd tree-sitter
+    sudo pacman -S --noconfirm ripgrep fd tree-sitter-cli
 fi
 
 # Install neovim-remote (nvr) for lazygit file-open integration

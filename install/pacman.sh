@@ -72,7 +72,7 @@ dev_packages=(
     xclip
     xsel
     highlight
-    tree-sitter
+    tree-sitter-cli
     
     # Network tools
     net-tools
