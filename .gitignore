@@ -21,3 +21,6 @@ zsh/.oh-my-zsh/
 tags.*
 tags
 git/hooks/secrets.local.patterns
+
+# lazygit runtime state
+config/lazygit/state.yml

@@ -120,6 +120,13 @@ echo -e "\n${GREEN}Configuring fontconfig${NORMAL}"
 source install/fontconfig.sh || handle_error "fontconfig setup failed"
 success_message "fontconfig configured"
 
+# Dark color scheme (Linux only - read by browsers via xdg-desktop-portal)
+if [ "$OS" != "Darwin" ]; then
+    echo -e "\n${GREEN}Configuring color scheme${NORMAL}"
+    source install/theme.sh || handle_error "Color scheme setup failed"
+    success_message "Color scheme configured"
+fi
+
 # Final setup
 echo -e "\n${GREEN}Performing final setup${NORMAL}"
 
