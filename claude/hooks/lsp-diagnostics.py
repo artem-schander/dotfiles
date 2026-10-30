@@ -81,6 +81,10 @@ def edited_php_files(transcript_path, root):
     for path in dict.fromkeys(EDITED_FILE.findall(text)):
         if TEST_PATH.search(path) or "/vendor/" in path:
             continue
+        # Tool results (a GitLab file read, for example) also carry
+        # `file_path` keys with repository-relative paths; commonpath refuses
+        # to mix those with the absolute root, so resolve against it first.
+        path = os.path.abspath(os.path.join(root, path))
         if os.path.isfile(path) and os.path.commonpath([root, path]) == root:
             files.append(path)
 

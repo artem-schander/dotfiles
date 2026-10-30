@@ -138,7 +138,7 @@ return {
               if vim.api.nvim_get_option_value("buftype", { buf = buf }) == "nofile" then return end
             end
 
-            require("session_manager").save_current_session()
+            require("resession").save(require("user.utils").get_session_name(), { dir = "dirsession", notify = false })
           end,
         },
       },

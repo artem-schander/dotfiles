@@ -22,7 +22,8 @@ return {
   { import = "astrocommunity.colorscheme.github-nvim-theme" },
 
   { import = "astrocommunity.completion.copilot-cmp" },
-  -- { import = "astrocommunity.pack.laravel" },
+  -- { import = "astrocommunity.pack.laravel" }, -- pulls phpactor (dup of intelephense) + pint on save
+  { import = "astrocommunity.pack.blade" },
   { import = "astrocommunity.pack.vue" },
 
   -- Live markdown preview in the browser (renders mermaid diagrams natively).

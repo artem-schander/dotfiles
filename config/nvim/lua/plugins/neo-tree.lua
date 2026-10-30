@@ -56,6 +56,47 @@ return {
   --   })
   -- end,
   opts = function(plugin, opts)
+    -- like the built-in next/prev_git_modified, but untracked files count as changed too
+    local function focus_changed_file(state, step)
+      local current_path = state.tree:get_node():get_id()
+      local _, worktree = require("neo-tree.git").find_existing_worktree(current_path)
+      if not worktree then return end
+
+      local utils = require("neo-tree.utils")
+      local paths = { current_path }
+      for path, status in pairs(worktree.status) do
+        local stat = vim.uv.fs_stat(path)
+        if path ~= current_path and status ~= "!" and stat and stat.type == "file" and utils.is_subpath(state.path, path) then
+          table.insert(paths, path)
+        end
+      end
+      if #paths == 1 then return end
+
+      local sorted_paths = utils.sort_by_tree_display(paths)
+      local current_index = 1
+      for index, path in ipairs(sorted_paths) do
+        if path == current_path then current_index = index end
+      end
+      local target = sorted_paths[(current_index - 1 + step) % #sorted_paths + 1]
+      if state.tree:get_node(target) then
+        require("neo-tree.ui.renderer").focus_node(state, target)
+      else
+        require("neo-tree.sources.filesystem").navigate(state, state.path, target, nil, false)
+      end
+    end
+
+    -- same keys as next/prev git hunk, but jumping between changed files
+    opts.filesystem = opts.filesystem or {}
+    opts.filesystem.commands = vim.tbl_extend("force", opts.filesystem.commands or {}, {
+      next_changed_file = function(state) focus_changed_file(state, 1) end,
+      prev_changed_file = function(state) focus_changed_file(state, -1) end,
+    })
+    opts.filesystem.window = opts.filesystem.window or {}
+    opts.filesystem.window.mappings = vim.tbl_extend("force", opts.filesystem.window.mappings or {}, {
+      ["<Leader>gj"] = "next_changed_file",
+      ["<Leader>gk"] = "prev_changed_file",
+    })
+
     table.insert(opts.event_handlers, {
       event = "file_opened",
       handler = function(file_path)

@@ -60,6 +60,18 @@ return {
     config = {
       -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
       intelephense = {
+        -- blade: intelephense has no blade support, but parses the php block of livewire single-file components
+        -- and treats the template after `?>` as inline html
+        filetypes = { "php", "blade" },
+        -- intelephense only analyses documents opened with languageId "php"
+        get_language_id = function() return "php" end,
+        on_attach = function(client, bufnr)
+          -- formatting a blade template as php would mangle it, blade-formatter handles blade
+          if vim.bo[bufnr].filetype == "blade" then
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end
+        end,
         settings = {
           intelephense = {
             environment = {
@@ -100,7 +112,32 @@ return {
         filetypes = { "css" }, -- kein scss mehr
       },
       tailwindcss = {
-        filetypes = { "html", "vue", "scss", "css", "javascript", "typescript" },
+        filetypes = { "html", "vue", "scss", "css", "javascript", "typescript", "blade" },
+        settings = { tailwindCSS = { includeLanguages = { blade = "html" } } },
+      },
+      html = {
+        filetypes = { "html", "templ", "blade" },
+      },
+      emmet_ls = {
+        -- lspconfig defaults + blade
+        filetypes = {
+          "astro",
+          "blade",
+          "css",
+          "eruby",
+          "html",
+          "htmlangular",
+          "htmldjango",
+          "javascriptreact",
+          "less",
+          "pug",
+          "sass",
+          "scss",
+          "svelte",
+          "templ",
+          "typescriptreact",
+          "vue",
+        },
       },
       volar = {
         settings = {
@@ -137,7 +174,7 @@ return {
           -- the rest of the autocmd options (:h nvim_create_autocmd)
           desc = "Refresh codelens (buffer)",
           callback = function(args)
-            if require("astrolsp").config.features.codelens then vim.lsp.codelens.refresh { bufnr = args.buf } end
+            if require("astrolsp").config.features.codelens then vim.lsp.codelens.enable(true, { bufnr = args.buf }) end
           end,
         },
       },
@@ -155,7 +192,7 @@ return {
           function() require("astrolsp.toggles").buffer_semantic_tokens() end,
           desc = "Toggle LSP semantic highlight (buffer)",
           cond = function(client)
-            return client.supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens ~= nil
+            return client:supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens ~= nil
           end,
         },
       },

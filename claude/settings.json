@@ -41,6 +41,16 @@
             "timeout": 40
           }
         ]
+      },
+      {
+        "matcher": "mcp__claude_ai_Gmail__.*|mcp__claude_ai_Google_Calendar__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/utc-zeitstempel-umrechnen.py\"",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "Stop": [

@@ -1,29 +1,28 @@
--- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
 -- Customize Treesitter
+-- --------------------
+-- Treesitter customizations are handled with AstroCore
+-- as nvim-treesitter simply provides a download utility for parsers.
+-- Tree inspection is built in: :InspectTree, :Inspect
 
 ---@type LazySpec
 return {
-  {
-    "nvim-treesitter/playground",
-    cmd = { "TSPlaygroundToggle", "TSHighlightCapturesUnderCursor" },
-    config = true,
-  },
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
+  "AstroNvim/astrocore",
+  ---@type AstroCoreOpts
+  opts = {
+    treesitter = {
+      highlight = true,
+      -- blade indent query ignores the HTML; indent/blade.lua uses Vim's HTML indent instead
+      indent = function(lang) return lang ~= "blade" end,
+      auto_install = true,
       ensure_installed = {
         "lua",
         "vim",
-        -- add more arguments for adding more treesitter parsers
         "bash",
         "c",
         "javascript",
         "json",
-        "lua",
         "php",
         "html",
-        "bash",
         "python",
         "typescript",
         "css",
@@ -35,41 +34,6 @@ return {
         "blade",
         "pug",
       },
-      context_commentstring = {
-        enable = true,
-        enable_autocmd = false,
-      },
     },
-    config = function(plugin, opts)
-      local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-      parser_config.blade = {
-        install_info = {
-          url = "https://github.com/EmranMR/tree-sitter-blade.git",
-          files = {"src/parser.c"},
-          branch = "main",
-        },
-        filetype = "blade",
-      }
-
-      vim.filetype.add({
-        pattern = {
-          ['.*%.blade%.php'] = 'blade',
-        },
-      })
-
-      -- opts.highlight.disable = { "php" } -- list of language that will be disabled
-      local uv = vim.uv or vim.loop
-
-      -- opts.highlight = {
-      --   enable = true,
-      --   additional_vim_regex_highlighting = false, -- sehr wichtig!
-      --   disable = function(_, _)
-      --     -- Keine Bedingung möglich ohne fs_stat → lasse alles aktiv
-      --     return false
-      --   end,
-      -- }
-
-      require("nvim-treesitter.configs").setup(opts)
-    end
-  }
+  },
 }

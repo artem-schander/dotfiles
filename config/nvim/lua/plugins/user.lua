@@ -27,11 +27,6 @@ return {
   -- == Examples of Overriding Plugins ==
 
   {
-    "kevinhwang91/nvim-ufo",
-    enabled = false,
-  },
-
-  {
     "AstroNvim/astrolsp",
     opts = function(_, opts) opts.formatting.format_on_save.enabled = false end,
   },
@@ -130,6 +125,10 @@ return {
       maps.n["<Leader>h"] = {
         function() require("fzf-lua").buffers() end,
         desc = "Find buffers",
+      }
+      maps.n["<Leader>y"] = {
+        function() require("fzf-lua").git_status() end,
+        desc = "Find uncommitted files",
       }
       maps.n["<Leader>a"] = {
         function()
@@ -285,11 +284,6 @@ return {
       )
     end,
   },
-
-  -- submodules = false: the repo's tree-sitter-html submodule is only used to
-  -- generate the grammar, not by nvim (src/parser.c is committed). Recursing it
-  -- on update breaks Lazy when the submodule's .git/modules entry is corrupt.
-  { "EmranMR/tree-sitter-blade", submodules = false },
 
   { "tpope/vim-surround" },
   { "tpope/vim-abolish" },

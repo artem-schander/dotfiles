@@ -25,6 +25,25 @@ return {
         'markdown',
       },
     },
+    -- replacement: does not remap `>`, so dot repeat keeps working
+    {
+      "tronikelis/ts-autotag.nvim",
+      lazy = false, -- self lazy-loads; lazy loading it breaks its init order
+      opts = {
+        filetypes = {
+          "typescript",
+          "javascript",
+          "typescriptreact",
+          "javascriptreact",
+          "xml",
+          "html",
+          "templ",
+          "php",
+          "blade",
+          "vue",
+        },
+      },
+    },
 
     -- { "nvim-treesitter/nvim-treesitter", enabled = false },
     -- { "nvim-treesitter/nvim-treesitter-textobjects", enabled = false },

@@ -6,7 +6,7 @@ local prefix = "<Leader>T"
 return {
   {
     "nvim-neotest/neotest",
-    version = "v5.9.1",
+    version = "^5", -- v5.9.1 pin breaks test discovery on nvim 0.12
     lazy = true,
     dependencies = {
       { "nvim-neotest/nvim-nio" },
@@ -14,6 +14,7 @@ return {
       { "antoinemadec/FixCursorHold.nvim" },
       { "nvim-treesitter/nvim-treesitter" },
       { "olimorris/neotest-phpunit" },
+      { "V13Axel/neotest-pest" },
       {
         "AstroNvim/astrocore",
         opts = {
@@ -103,6 +104,15 @@ return {
           end,
         },
       }, vim.api.nvim_create_namespace "neotest")
+      opts.adapters = {
+        require("neotest-pest")({
+          -- built-in detection only knows docker-compose.yml, newer sail installs create compose.yaml
+          sail_enabled = function()
+            return vim.fn.filereadable("vendor/bin/sail") == 1
+              and (vim.fn.filereadable("docker-compose.yml") == 1 or vim.fn.filereadable("compose.yaml") == 1)
+          end,
+        }),
+      }
       opts.quickfix = {
         enable = false,
         open = false,
