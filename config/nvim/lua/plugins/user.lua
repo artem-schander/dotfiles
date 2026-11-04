@@ -422,6 +422,12 @@ return {
         arguments = u.set_preset_for_args(gql_options),
         selection_set = u.set_preset_for_args(gql_options),
       }
+      -- blade reuses the html node names (start_tag, element, ...); PHP in {{ }} / @directive(...)
+      -- and Alpine JS are injected languages and get the php_only / javascript presets
+      langs["blade"] = vim.tbl_deep_extend("force", langs["html"], {
+        -- html preset joins to `<x-foo a="1"/>`, keep the space before `/>`
+        self_closing_tag = { join = { space_in_brackets = true } },
+      })
       require("treesj").setup {
         -- Use default keymaps
         -- (<space>m - toggle, <space>j - join, <space>s - split)

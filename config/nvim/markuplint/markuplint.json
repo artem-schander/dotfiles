@@ -1,0 +1,11 @@
+{
+  "extends": ["markuplint:recommended"],
+  "parser": {
+    "\\.blade\\.php$": "./blade-parser.mjs"
+  },
+  "rules": {
+    "no-unknown-attr": {
+      "options": { "ignoreAttrNamePrefix": ["x-", ":", "@", "wire:"] }
+    }
+  }
+}

@@ -4,7 +4,22 @@ vim.g.ai_completion_mode = vim.g.ai_completion_mode or "ghost"
 
 local function ghost_mode() return vim.g.ai_completion_mode == "ghost" end
 
-local function apply_ghost_trigger(buffer) vim.b[buffer].minuet_virtual_text_auto_trigger = ghost_mode() end
+-- without the provider's key minuet errors on every request, so AI completion stays off instead
+local api_key_env = { codestral = "CODESTRAL_API_KEY", claude = "ANTHROPIC_API_KEY" }
+
+local function has_api_key()
+  local ok, minuet = pcall(require, "minuet")
+  local provider = ok and minuet.config and minuet.config.provider or "codestral"
+  return vim.env[api_key_env[provider]] ~= nil
+end
+
+local function apply_ghost_trigger(buffer) vim.b[buffer].minuet_virtual_text_auto_trigger = ghost_mode() and has_api_key() end
+
+local function apply_ghost_trigger_to_all_buffers()
+  for _, buffer in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buffer) then apply_ghost_trigger(buffer) end
+  end
+end
 
 return {
   {
@@ -16,7 +31,7 @@ return {
       opts.sources.providers.minuet = {
         name = "minuet",
         module = "minuet.blink",
-        enabled = function() return not ghost_mode() end,
+        enabled = function() return not ghost_mode() and has_api_key() end,
         async = true,
         timeout_ms = 3000, -- matches minuet request_timeout
         score_offset = 1000,
@@ -67,6 +82,10 @@ return {
         function()
           local minuet = require("minuet")
           minuet.change_provider(minuet.config.provider == "codestral" and "claude" or "codestral")
+          apply_ghost_trigger_to_all_buffers()
+          if not has_api_key() then
+            vim.notify(api_key_env[minuet.config.provider] .. " is not set, AI completion is off", vim.log.levels.WARN)
+          end
         end,
         desc = "Toggle AI completion provider (codestral/claude)",
       },
@@ -74,9 +93,7 @@ return {
         "<Leader>uG",
         function()
           vim.g.ai_completion_mode = ghost_mode() and "menu" or "ghost"
-          for _, buffer in ipairs(vim.api.nvim_list_bufs()) do
-            if vim.api.nvim_buf_is_loaded(buffer) then apply_ghost_trigger(buffer) end
-          end
+          apply_ghost_trigger_to_all_buffers()
           vim.notify("AI completion shown as: " .. vim.g.ai_completion_mode)
         end,
         desc = "Toggle AI completion display (ghost/menu)",
@@ -91,14 +108,16 @@ return {
       virtualtext = {
         show_on_completion_menu = true,
         -- accept is <Tab> (see blink keymap), dismiss is <Esc> (leaving insert mode clears it)
-        -- <C-]> cycles alternatives (wraps around), or requests a suggestion if none is shown
-        keymap = {
-          next = "<C-]>",
-        },
+        -- <C-]> cycles alternatives (wraps around), or requests a suggestion if none is shown;
+        -- mapped in config below so it does nothing without an API key
+        keymap = {},
       },
     },
     config = function(_, opts)
       require("minuet").setup(opts)
+      vim.keymap.set("i", "<C-]>", function()
+        if has_api_key() then require("minuet.virtualtext").action.next() end
+      end, { desc = "[minuet.virtualtext] Cycle to next suggestion" })
       vim.api.nvim_create_autocmd("FileType", {
         desc = "Enable AI ghost text per buffer according to vim.g.ai_completion_mode",
         callback = function(event) apply_ghost_trigger(event.buf) end,

@@ -54,6 +54,7 @@ return {
     -- enable servers that you already have installed without mason
     servers = {
       -- "pyright"
+      "laravel_lsp", -- composer global require laravel/lsp; starts only in projects with an `artisan` file
     },
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
@@ -107,6 +108,10 @@ return {
             },
           },
         },
+      },
+      laravel_lsp = {
+        -- composer's global bin dir is not on PATH
+        cmd = { vim.fn.expand "~/.composer/vendor/bin/laravel-lsp" },
       },
       cssls = {
         filetypes = { "css" }, -- kein scss mehr
