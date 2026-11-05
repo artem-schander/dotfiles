@@ -26,6 +26,11 @@ return {
   { import = "astrocommunity.pack.blade" },
   { import = "astrocommunity.pack.vue" },
 
+  -- Python: basedpyright + ruff (lint/format), debugpy, neotest-python, venv-selector (<Leader>lv)
+  { import = "astrocommunity.pack.python.base" },
+  { import = "astrocommunity.pack.python.basedpyright" },
+  { import = "astrocommunity.pack.python.ruff" },
+
   -- Live markdown preview in the browser (renders mermaid diagrams natively).
   -- Keymaps: <Leader>Mp preview, <Leader>Ms stop, <Leader>Mt toggle.
   { import = "astrocommunity.markdown-and-latex.markdown-preview-nvim" },

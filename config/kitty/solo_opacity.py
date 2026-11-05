@@ -5,6 +5,7 @@ import subprocess
 from typing import Any
 
 from kitty.boss import Boss
+from kitty.constants import is_macos
 from kitty.fast_data_types import change_background_opacity, get_options, x11_window_id
 from kitty.window import Window
 
@@ -44,6 +45,9 @@ def is_alone(os_window_id: int) -> bool:
 
 
 def on_resize(boss: Boss, window: Window, data: dict[str, Any]) -> None:
+    # No i3 on macOS; resetting here would undo set_background_opacity on every resize
+    if is_macos:
+        return
     os_window_id = window.os_window_id
     opacity = 1.0 if is_alone(os_window_id) else get_options().background_opacity
     change_background_opacity(os_window_id, opacity)
