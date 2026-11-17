@@ -1,0 +1,7 @@
+# Lines an AI coding assistant adds to commit messages and that must never reach a repository.
+# One extended regular expression per line, matched case-insensitively against each message line.
+# Used by claude-attribution.commit-msg (strips them) and claude-attribution.pre-push (refuses them).
+^[[:space:]]*Co-Authored-By:.*(claude|anthropic)
+^[[:space:]]*Claude-Session:
+Generated with \[Claude Code\]
+claude\.ai/code/session_

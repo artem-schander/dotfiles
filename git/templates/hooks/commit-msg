@@ -1,0 +1,26 @@
+#!/bin/sh
+# Runs every ~/.dotfiles/git/hooks/*.<hook type> with this hook's arguments and stdin
+# (commit-msg needs the message file, pre-push the refs on stdin), then the repository's own
+# hook of this type if one was moved aside to <type>.project. Any failing hook fails this one.
+
+hook_type=$(basename "$0")
+hooks=~/.dotfiles/git/hooks
+input=$(mktemp)
+# Only these hook types get input on stdin; reading it for the others would wait forever.
+case "$hook_type" in
+    pre-push|pre-receive|post-receive|post-rewrite|reference-transaction) cat > "$input" ;;
+esac
+
+exit_code=0
+for hook in "$hooks"/*."$hook_type"; do
+    [ -x "$hook" ] || continue
+    "$hook" "$@" < "$input" || exit_code=1
+done
+
+# A repository's own hook of this type (yorkie, husky), moved aside when these were installed.
+if [ -x "$0.project" ]; then
+    "$0.project" "$@" < "$input" || exit_code=1
+fi
+
+rm -f "$input"
+exit $exit_code

@@ -1,0 +1,27 @@
+#!/bin/sh
+# Strips AI attribution lines (claude-attribution.patterns) from every commit message written
+# through `git commit` or `git merge`, whoever wrote the message. Trailing blank lines left
+# behind are removed too. Cherry-picks and rebases skip this hook: claude-attribution.pre-push
+# refuses what slips through there.
+
+message_file="$1"
+patterns="$(dirname "$0")/claude-attribution.patterns"
+
+[ -f "$message_file" ] || exit 0
+[ -f "$patterns" ] || { echo "claude-attribution: $patterns missing" >&2; exit 1; }
+
+expressions=$(mktemp)
+cleaned=$(mktemp)
+grep -v '^#' "$patterns" | grep -v '^[[:space:]]*$' > "$expressions"
+
+# grep -v exits 1 when every line matched; the message is then empty and git aborts the commit itself.
+grep -v -i -E -f "$expressions" "$message_file" > "$cleaned"
+
+if ! cmp -s "$message_file" "$cleaned"; then
+    # Drop the blank lines the removed trailers left at the end.
+    awk '{ lines[NR] = $0 } END { last = NR; while (last > 0 && lines[last] ~ /^[[:space:]]*$/) last--; for (i = 1; i <= last; i++) print lines[i] }' "$cleaned" > "$message_file"
+    echo "claude-attribution: removed AI attribution lines from the commit message"
+fi
+
+rm -f "$cleaned" "$expressions"
+exit 0

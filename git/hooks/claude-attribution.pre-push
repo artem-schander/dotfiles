@@ -1,0 +1,46 @@
+#!/bin/sh
+# Refuses a push when a commit it would publish carries an AI attribution line
+# (claude-attribution.patterns). Catches what claude-attribution.commit-msg cannot: cherry-picks,
+# rebases, commits made on another machine or with --no-verify on commit. Only commits new to the
+# remote are checked, so history that is already published never blocks a push.
+#
+# git hands the refs on stdin: <local ref> <local sha> <remote ref> <remote sha>
+
+remote_name="$1"
+patterns="$(dirname "$0")/claude-attribution.patterns"
+zero=0000000000000000000000000000000000000000
+
+[ -f "$patterns" ] || { echo "claude-attribution: $patterns missing" >&2; exit 1; }
+
+expressions=$(mktemp)
+grep -v '^#' "$patterns" | grep -v '^[[:space:]]*$' > "$expressions"
+offending=$(mktemp)
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    # A deleted ref publishes nothing.
+    case "$local_sha" in *[!0]*) ;; *) continue ;; esac
+
+    case "$remote_sha" in
+        *[!0]*) range="$remote_sha..$local_sha" ;;
+        # A new branch: everything not yet on any ref of this remote (of any remote when a
+        # repository's own pre-push calls this hook without the remote name).
+        *) range="$local_sha --not --remotes${remote_name:+=$remote_name}" ;;
+    esac
+
+    for commit in $(git rev-list $range); do
+        if git log -1 --format=%B "$commit" | grep -q -i -E -f "$expressions"; then
+            echo "  $(git log -1 --format='%h %s' "$commit" | cut -c1-100)" >> "$offending"
+        fi
+    done
+done
+
+status=0
+if [ -s "$offending" ]; then
+    echo "claude-attribution: push refused, these commits carry AI attribution lines:" >&2
+    cat "$offending" >&2
+    echo "Remove the lines (git rebase -i, then reword) and push again." >&2
+    status=1
+fi
+
+rm -f "$expressions" "$offending"
+exit $status
